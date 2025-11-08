@@ -1,0 +1,51 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+local button = Instance.new("TextButton")
+button.Name = "PurpleButton"
+button.Text = "Toggle Autofarm"
+button.AnchorPoint = Vector2.new(1, 0)
+button.Position = UDim2.new(1, -10, 0, 10) -- Top-right corner
+button.Size = UDim2.new(0, 100, 0, 50)
+button.BackgroundColor3 = Color3.fromRGB(107, 98, 155) -- Purple
+button.TextColor3 = Color3.new(1, 1, 1) -- White text
+button.Parent = screenGui
+
+local autofarmEnabled = false
+local autofarmThread
+
+local function ButtonClicked()
+    autofarmEnabled = not autofarmEnabled
+
+    if autofarmEnabled then
+        print("Coin autofarm enabled!")
+        button.Text = "Stop Farm"
+
+        autofarmThread = task.spawn(function()
+            while autofarmEnabled do
+                for i = 1, 500000 do
+                    local args = {
+                        [1] = 10
+                    }
+                    game:GetService("ReplicatedStorage").Remotes.GiveCurrency:FireServer(unpack(args))
+                end
+                task.wait(1)
+            end
+        end)
+
+    else
+        print("Coin autofarm disabled!")
+        button.Text = "Start Farm"
+        autofarmEnabled = false
+    end
+end
+
+button.MouseButton1Click:Connect(ButtonClicked)
+
+game.StarterGui:SetCore("SendNotification", { 
+    Title = "â›¤ V.2 Witchcraft â›¤";
+    Text = "Made by Lecutio";
+    Icon = "rbxthumb://type=Asset&id=14067496704&w=150&h=150";
+    Duration = "2";
+    Button1 = "Close";
+})
